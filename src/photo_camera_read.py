@@ -295,7 +295,6 @@ def read_camera():
         img_sudoku_result, sudoku_board = get_completed_sudoku_camera(img_sudoku_numbers, img_sudoku,
                                                                       img_sudoku_grid.copy())
         cache_sudoku_boards(sudoku_boards, sudoku_board)
-        cv2.waitKey(0)
         loop = render_window(cv2.resize(img_user, (640, 640)), img_sudoku_result)
 
     # cap.release()
