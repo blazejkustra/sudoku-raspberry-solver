@@ -9,7 +9,7 @@ def make_image_rectangle(img):
     img_small = cv2.resize(img, (0, 0), fx=scale, fy=scale)
     width = int(np.size(img_small, 1))
     height = int(np.size(img_small, 0))
-    centre = int((width - height) / 2)
+    centre = abs(int((width - height) / 2))
 
     return img_small[0:height, centre:width - centre]
 
@@ -104,7 +104,6 @@ def get_separated_sudoku_numbers(img_sudoku):
 
     return img_sudoku_processed - img_sudoku_table
 
-
 def render_window(img_user):
     cv2.imshow('result', img_user)
 
@@ -135,33 +134,45 @@ def read_image(filepath):
 
 
 def read_camera():
-    cap = cv2.VideoCapture(0)
+    # cap = cv2.VideoCapture(0)
 
     global scale
-    scale = 640 / cap.get(4)
-
+    # scale = 640 / cap.get(4)
+    scale = 640 / 480
     sudoku_boards = []
     loop = True
 
     while loop:
-        success, img = cap.read()
+        # success, img = cap.read()
+        img = cv2.imread("./sudoku.png")
 
         img_small = make_image_rectangle(img)
+        cv2.imshow("img_small", img_small)
         img_user = draw_user_interface(img_small.copy())
+        cv2.imshow("img_user", img_user)
 
         img_dilate = get_dilated_image(img_small)
+        cv2.imshow("img_dilate", img_dilate)
+
         points = get_contour_points(img_dilate)
 
         try:
             points = sort_points(points)
             img_sudoku = get_transformed_sudoku(img_small, points)
+            cv2.imshow("img_sudoku", img_sudoku)
         except (ValueError, cv2.error):
             loop = render_window(img_user)
             continue
 
         img_sudoku_numbers = get_separated_sudoku_numbers(img_sudoku)
+        cv2.imshow("image6", img_sudoku_numbers)
 
+        cv2.imwrite("numbers.png", img_sudoku_numbers)
         loop = render_window(img_user)
 
-    cap.release()
+    # cap.release()
     cv2.destroyAllWindows()
+
+if __name__ == '__main__':
+    read_camera()
+    # print(read_image("./sudoku.png"))
