@@ -1,0 +1,17 @@
+{
+  "python.pythonPath": "/Users/blazejkustra/.local/share/virtualenvs/agh-lego-backend-mokBX6we/bin/python",
+  "python.formatting.provider": "autopep8",
+  "python.linting.pycodestyleEnabled": true,
+  "python.linting.pylintEnabled": true,
+  "cSpell.words": [
+    "dotenv",
+    "jsonify",
+    "psycopg"
+  ],
+  "python.linting.pylintArgs": [
+    "--load-plugins",
+    "pylint_flask_sqlalchemy",
+    "pylint_flask",
+    "--disable=C0111"
+  ]
+}
