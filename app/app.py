@@ -3,6 +3,8 @@ import numpy as np
 import requests
 import json
 
+from sudoku import Sudoku
+
 
 def preprocessing(img):
     img = cv2.resize(img, (32, 32))
@@ -173,6 +175,48 @@ def read_image(img):
     return user_img, sudoku_board
 
 
+def show_board_with_sudoku_image(sudoku_board, user_img):
+    sudoku_grid = get_sudoku_grid(sudoku_board)
+    images_combined = np.concatenate((cv2.resize(user_img, (640, 640)), sudoku_grid), axis=1)
+    return images_combined
+
+
+def get_sudoku_grid(sudoku_board):
+    sudoku_grid = cv2.imread("./images/sudoku-grid.png")
+    for i in range(9):
+        for j in range(9):
+            if sudoku_board[i][j] is not None:
+                cv2.putText(sudoku_grid, str(sudoku_board[i][j]), (15 + j * 71, 60 + i * 71),
+                            cv2.FONT_HERSHEY_DUPLEX, 2, (0, 0, 0), 2, cv2.LINE_AA)
+    return sudoku_grid
+
+
+def get_solved_sudoku(sudoku_board):
+    sudoku = Sudoku(sudoku_board)
+    sudoku.solve_sudoku(0, 0)
+    solved_sudoku = sudoku.solved_sudoku_numbers
+    return solved_sudoku
+
+
+def get_hint(sudoku_board):
+    sudoku = Sudoku(sudoku_board)
+    i, j, number = sudoku.get_hint()
+    sudoku_board[i][j] = number
+    return sudoku_board
+
+
+def start_game(sudoku_board, user_img):
+    sudoku_board_copy = np.copy(sudoku_board)
+    while True:
+        cv2.imshow("result", show_board_with_sudoku_image(sudoku_board_copy, user_img))
+        if cv2.waitKey(1) == ord('h'):
+            sudoku_board_copy = get_hint(sudoku_board)
+        elif cv2.waitKey(1) == ord('s'):
+            sudoku_board_copy = get_solved_sudoku(sudoku_board_copy)
+        elif cv2.waitKey(1) == ord('q'):
+            break
+
+
 def read_camera():
     cap = cv2.VideoCapture(0)
 
@@ -189,9 +233,7 @@ def read_camera():
     cv2.imshow('last_frame', img)
     img = cv2.imread("./images/sudoku.jpg")  # TODO: change to img from webcam
     user_img, sudoku_board = read_image(img)
-
-    cv2.imshow("result", user_img)
-    print(sudoku_board)
+    start_game(sudoku_board, user_img)
 
     cv2.waitKey(0)
     cv2.destroyAllWindows()
