@@ -208,12 +208,13 @@ def get_hint(sudoku_board):
 def start_game(sudoku_board, user_img):
     sudoku_board_copy = np.copy(sudoku_board)
     while True:
+        key = cv2.waitKey(1)
         cv2.imshow("result", show_board_with_sudoku_image(sudoku_board_copy, user_img))
-        if cv2.waitKey(1) == ord('h'):
+        if key == ord('h'):
             sudoku_board_copy = get_hint(sudoku_board)
-        elif cv2.waitKey(1) == ord('s'):
+        elif key == ord('s'):
             sudoku_board_copy = get_solved_sudoku(sudoku_board_copy)
-        elif cv2.waitKey(1) == ord('q'):
+        elif key == ord('q'):
             break
 
 
