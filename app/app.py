@@ -2,9 +2,11 @@ import cv2
 import numpy as np
 import requests
 import json
+import sys
 
 from sudoku import Sudoku
 
+server_address = "http://127.0.0.1/predict"
 
 def preprocessing(img):
     img = cv2.resize(img, (32, 32))
@@ -18,7 +20,7 @@ def predict_digit(img):
     img = preprocessing(img)
     bytes_img = cv2.imencode(".png", img)[1].tobytes()
     response = requests.post(
-        "http://127.0.0.1:5000/predict", data=bytes_img)
+        server_address, data=bytes_img)
     prediction = json.loads(response.content)
 
     return prediction["digit_predicted"]
@@ -241,4 +243,6 @@ def read_camera():
 
 
 if __name__ == '__main__':
+    if len(sys.argv) > 0:
+        server_address = "http://" + sys.argv[1] + "/predict"
     read_camera()
