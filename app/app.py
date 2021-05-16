@@ -6,8 +6,6 @@ import sys
 
 from sudoku import Sudoku
 
-server_address = "http://127.0.0.1/predict"
-
 def preprocessing(img):
     img = cv2.resize(img, (32, 32))
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -19,8 +17,7 @@ def preprocessing(img):
 def predict_digit(img):
     img = preprocessing(img)
     bytes_img = cv2.imencode(".png", img)[1].tobytes()
-    response = requests.post(
-        server_address, data=bytes_img)
+    response = requests.post("https://sudoku-recognizer.herokuapp.com/predict", data=bytes_img)
     prediction = json.loads(response.content)
 
     return prediction["digit_predicted"]
@@ -234,7 +231,7 @@ def read_camera():
     cap.release()
 
     cv2.imshow('last_frame', img)
-    img = cv2.imread("./images/sudoku.jpg")  # TODO: change to img from webcam
+    #img = cv2.imread("./images/sudoku.jpg")  # TODO: change to img from webcam
     user_img, sudoku_board = read_image(img)
     start_game(sudoku_board, user_img)
 
@@ -243,6 +240,4 @@ def read_camera():
 
 
 if __name__ == '__main__':
-    if len(sys.argv) > 0:
-        server_address = "http://" + sys.argv[1] + "/predict"
     read_camera()
